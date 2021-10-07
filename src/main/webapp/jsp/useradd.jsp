@@ -29,7 +29,7 @@
                 </div>
                 <div>
                     <label for="ruserPassword">确认密码：</label>
-                    <input type="password" name="ruserPassword" id="ruserPassword" value=""> 
+                    <input type="password" name="ruserPassword" id="ruserPassword" value="">
 					<font color="red"></font>
                 </div>
                 <div>
@@ -57,7 +57,12 @@
                 <div>
                     <label >用户角色：</label>
                     <!-- 列出所有的角色分类 -->
-					<select name="userRole" id="userRole"></select>
+					<select name="userRole" id="userRole">
+                        <option value="0">--请选择--</option>
+                        <option value="1">系统管理员</option>
+                        <option value="2">经理</option>
+                        <option value="3">普通员工</option>
+                    </select>
 	        		<font color="red"></font>
                 </div>
                 <div class="providerAddBtn">

@@ -1,6 +1,7 @@
 package com.cl.servlet.User;
 
 import com.alibaba.fastjson.JSONArray;
+import com.cl.dao.BaseDao;
 import com.cl.pojo.Role;
 import com.cl.pojo.User;
 import com.cl.service.Role.RoleServiceImpl;
@@ -17,6 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +39,8 @@ public class UserServlet extends HttpServlet {
             this.query(req, resp);
         } else if (method.equals("add") && method != null) {
             this.addUser(req, resp);
+        } else if(method.equals("ucexist") && method != null){
+            this.UserCodeExist(req, resp);
         }
     }
 
@@ -164,8 +171,87 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+    //验证用户编码是否存在
+    public void UserCodeExist(HttpServletRequest req, HttpServletResponse resp) {
+        Connection connection = BaseDao.getConnection();
+        boolean ifExistUser = false;
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        //获取前端参数
+        Object o = req.getSession().getAttribute(Constants.USER_SESSION);
+        String userCode = req.getParameter("userCode");
+        System.out.println(userCode);
+        Map<String, String> resultMap = new HashMap<String, String>();
+        if (o == null) {//session过期了
+            resultMap.put("userCode","exist");
+        } else if (StringUtils.isNullOrEmpty(userCode)) {
+            resultMap.put("userCode","exist");
+        }else {
+            List<Object> list = new ArrayList<Object>();//存放参数
+            list.add(userCode);
+            Object[] params = list.toArray();
+            if (connection != null) {
+                String sql = "select * from smbms_user where userCode = ?";
+                try {
+                    rs = BaseDao.execute(connection,pstm, rs, sql.toString(),params);
+                    if (rs.next()) {
+                        ifExistUser = true;
+                    }else {
+                        ifExistUser = false;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    BaseDao.closeResource(null,pstm,rs);
+                }
+            }
+            System.out.println(ifExistUser);
+            if (ifExistUser == true) {
+                resultMap.put("userCode", "exist");
+            } else if(ifExistUser == false){
+                resultMap.put("userCode", "true");
+            }
+        }
+        try {
+            resp.setContentType("application/json");
+            PrintWriter writer = resp.getWriter();
+            //JSONArray，转换格式
+            /**
+             * resutlMap = ["result","session","result","error"]
+             * JSon格式 = {key：value}
+             */
+            writer.write(JSONArray.toJSONString(resultMap));
+            System.out.println(JSONArray.toJSONString(resultMap));
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+    }
     //添加用户
     public void addUser(HttpServletRequest req, HttpServletResponse resp) {
+        String userCode = req.getParameter("userCode");
+        String userName = req.getParameter("userName");
+        String userPassword = req.getParameter("userPassword");
+        int gender = Integer.parseInt(req.getParameter("gender"));
+        String birthday = req.getParameter("birthday");
+        String phone = req.getParameter("phone");
+        String address = req.getParameter("address");
+        int userRole = Integer.parseInt(req.getParameter("userRole"));
+
+
+        try {
+            UserServiceImpl userService = new UserServiceImpl();
+            userService.addUser(userCode,userName,userPassword,gender,birthday,phone,address,userRole);
+//            req.getRequestDispatcher("userlist.jsp").forward(req,resp);
+            query(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
