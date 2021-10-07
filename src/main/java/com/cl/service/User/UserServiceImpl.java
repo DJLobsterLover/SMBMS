@@ -83,19 +83,31 @@ public class UserServiceImpl implements UserService{
 
     }
 
+    public boolean addUser(String userCode, String userName, String userPassword, int gender, String birthday, String phone, String address, int userRole) {
+        Connection connection = null;
+        boolean r = false;
+        try {
+            connection = BaseDao.getConnection();
+            r = userDao.addUser(connection, userCode, userName, userPassword, gender, birthday, phone, address, userRole);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return r;
+    }
+
 
     @Test
     public void test() {
         UserServiceImpl userService = new UserServiceImpl();
-        List<User> users = null;
         try {
-            users = userService.getUserList(null,0,2,5);
+            boolean r  = userService.addUser("lisi","李四","123",1,"1987-12-04","1","1",2);
+            System.out.println(r);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (User user : users) {
-            System.out.println(user.getAddress());
-        }
+
     }
 
     @Test

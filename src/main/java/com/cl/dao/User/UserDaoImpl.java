@@ -159,5 +159,68 @@ public class UserDaoImpl implements UserDao{
         return userList;
     }
 
+    public boolean addUser(Connection connection, String userCode, String userName, String userPassword, int gender, String birthday,String phone, String address, int userRole) throws SQLException {
+        boolean ifExistUser = false;
+        boolean addUser = false;
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        List<Object> list = new ArrayList<Object>();//存放参数
+        list.add(userCode);
+        Object[] params = list.toArray();
+        if (connection != null) {
+            String sql = "select * from smbms_user where userCode = ?";
+            try {
+                rs = BaseDao.execute(connection,pstm,rs,sql.toString(),params);
+                System.out.println(rs);
+                if (rs.next()) {
+                    ifExistUser = true;
+                }else {
+                    ifExistUser = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                BaseDao.closeResource(null,pstm,rs);
+            }
+
+        }
+        System.out.println(ifExistUser);
+        if (ifExistUser == false) {
+            //用户不存在，可以添加
+            pstm = null;
+            String sql = "insert into smbms_user (userCode, userName, userPassword, gender, birthday, phone, address, userRole)\n" +
+                    "values (?,?,?,?,?,?,?,?)";
+            List<Object> list1 = new ArrayList<Object>();//存放参数
+            list1.add(userCode);
+            list1.add(userName);
+            list1.add(userPassword);
+            list1.add(gender);
+            list1.add(birthday);
+            list1.add(phone);
+            list1.add(address);
+            list1.add(userRole);
+            Object[] params1 = list1.toArray();
+            try {
+                int r = BaseDao.execute(connection,pstm,sql,params1);
+                System.out.println(r);
+                if (r > 0) {
+                    System.out.println("添加成功");
+                    addUser = true;
+                } else {
+                    addUser =false;
+                    System.out.println("添加失败");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }   finally {
+                BaseDao.closeResource(null,pstm,null);
+            }
+
+        }else {
+            System.out.println("用户已存在，不能添加");
+        }
+        return addUser;
+    }
+
 
 }

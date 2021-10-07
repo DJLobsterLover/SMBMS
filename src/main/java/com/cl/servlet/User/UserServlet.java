@@ -32,6 +32,8 @@ public class UserServlet extends HttpServlet {
             this.pwdModify(req, resp);
         } else if (method.equals("query") && method != null) {
             this.query(req, resp);
+        } else if (method.equals("add") && method != null) {
+            this.addUser(req, resp);
         }
     }
 
@@ -96,7 +98,7 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    //
+    //查询用户信息
     public void query(HttpServletRequest req, HttpServletResponse resp) {
         //查询用户列表
         //获取前端信息
@@ -161,4 +163,10 @@ public class UserServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+    //添加用户
+    public void addUser(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+
 }

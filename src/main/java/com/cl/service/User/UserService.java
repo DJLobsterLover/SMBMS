@@ -4,6 +4,7 @@ import com.cl.pojo.Role;
 import com.cl.pojo.User;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface UserService {
@@ -15,5 +16,7 @@ public interface UserService {
     public int getUserCount(String username, int userRole);
     //获取用户列表
     public List<User> getUserList(String username, int userRole, int currentPageNo, int pageSize)throws Exception;
+    //添加用户信息
+    public boolean addUser(String userCode, String userName, String userPassword, int gender, String birthday,String phone, String address, int userRole);
 
 }
