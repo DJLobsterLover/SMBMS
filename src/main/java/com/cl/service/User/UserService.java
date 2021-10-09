@@ -18,5 +18,6 @@ public interface UserService {
     public List<User> getUserList(String username, int userRole, int currentPageNo, int pageSize)throws Exception;
     //添加用户信息
     public boolean addUser(String userCode, String userName, String userPassword, int gender, String birthday,String phone, String address, int userRole);
-
+    //删除用户信息
+    public boolean delUser(int userId);
 }

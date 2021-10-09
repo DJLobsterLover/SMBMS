@@ -5,7 +5,7 @@ function deleteUser(obj){
 	$.ajax({
 		type:"GET",
 		url:path+"/jsp/user.do",
-		data:{method:"deluser",uid:obj.attr("userid")},
+		data:{method:"deluser",uid:obj.attr("id")},
 		dataType:"json",
 		success:function(data){
 			if(data.delResult == "true"){//删除成功：移除删除行

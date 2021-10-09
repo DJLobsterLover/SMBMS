@@ -41,8 +41,11 @@ public class UserServlet extends HttpServlet {
             this.addUser(req, resp);
         } else if(method.equals("ucexist") && method != null){
             this.UserCodeExist(req, resp);
+        } else if (method.equals("deluser")) {
+            this.delUser(req, resp);
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -253,6 +256,42 @@ public class UserServlet extends HttpServlet {
             e.printStackTrace();
         }
 
+    }
+    //删除用户
+    private void delUser(HttpServletRequest req, HttpServletResponse resp) {
+        Object o = req.getSession().getAttribute(Constants.USER_SESSION);
+        int userID = Integer.parseInt(req.getParameter("uid"));
+        boolean delete = false;
+        Map<String, String> resultMap = new HashMap<String, String>();
+        if (o == null) {//session过期了
+            resultMap.put("delResult", "false");
+        } else {
+            try {
+                UserServiceImpl userService = new UserServiceImpl();
+                delete = userService.delUser(userID);
+                if (delete == true) {
+                    resultMap.put("delResult", "true");
+                } else {
+                    resultMap.put("delResult", "false");
+                }
+                resp.setContentType("application/json");
+                PrintWriter writer = resp.getWriter();
+                //JSONArray，转换格式
+                /**
+                 * resutlMap = ["result","session","result","error"]
+                 * JSon格式 = {key：value}
+                 */
+                writer.write(JSONArray.toJSONString(resultMap));
+                System.out.println(JSONArray.toJSONString(resultMap));
+                writer.flush();
+                writer.close();
+                System.out.println(userID);
+                System.out.println(delete);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

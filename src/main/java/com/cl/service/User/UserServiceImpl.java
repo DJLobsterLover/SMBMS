@@ -97,12 +97,26 @@ public class UserServiceImpl implements UserService{
         return r;
     }
 
+    public boolean delUser(int userId) {
+        Connection connection = null;
+        boolean r = false;
+        try {
+            connection = BaseDao.getConnection();
+            r = userDao.delUser(connection, userId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            BaseDao.closeResource(connection,null,null);
+        }
+        return r;
+    }
+
 
     @Test
     public void test() {
         UserServiceImpl userService = new UserServiceImpl();
         try {
-            boolean r  = userService.addUser("lisi","李四","123",1,"1987-12-04","1","1",2);
+            boolean r  = userService.delUser(24);
             System.out.println(r);
         } catch (Exception e) {
             e.printStackTrace();

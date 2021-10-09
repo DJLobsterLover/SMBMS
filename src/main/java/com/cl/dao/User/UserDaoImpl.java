@@ -170,6 +170,7 @@ public class UserDaoImpl implements UserDao{
         if (connection != null) {
             String sql = "select * from smbms_user where userCode = ?";
             try {
+
                 rs = BaseDao.execute(connection,pstm,rs,sql.toString(),params);
                 System.out.println(rs);
                 if (rs.next()) {
@@ -220,6 +221,38 @@ public class UserDaoImpl implements UserDao{
             System.out.println("用户已存在，不能添加");
         }
         return addUser;
+    }
+
+    public boolean delUser(Connection connection, int userId) throws SQLException {
+        System.out.println("------------------------------------------------");
+        boolean ifDelete = false;
+        PreparedStatement pstm = null;
+        int rs = 0;
+        List<Object> list = new ArrayList<Object>();//存放参数
+        list.add(userId);
+        Object[] params = list.toArray();
+        if (connection != null) {
+            String sql = "delete from smbms_user where id = ?";
+            System.out.println(sql.toString());
+            try {
+
+                rs = BaseDao.execute(connection,pstm,sql.toString(),params);
+                System.out.println(rs);
+                if (rs > 0) {
+                    ifDelete = true;
+                    System.out.println("该用户已删除");
+                }else {
+                    ifDelete = false;
+                    System.out.println("删除失败！");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                BaseDao.closeResource(null,pstm,null);
+            }
+
+        }
+        return ifDelete;
     }
 
 
