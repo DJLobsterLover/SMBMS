@@ -111,13 +111,42 @@ public class UserServiceImpl implements UserService{
         return r;
     }
 
+    public User viewUser(int userId) {
+        Connection connection = null;
+        User u = null;
+        try {
+            connection = BaseDao.getConnection();
+            u = userDao.viewUser(connection, userId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            BaseDao.closeResource(connection,null,null);
+        }
+        return u;
+    }
+
+    public boolean modifyUser(int userID, String userName, int gender, String birthday, String phone, String address, int userRole) {
+        Connection connection = null;
+        boolean b = false;
+        try {
+            connection = BaseDao.getConnection();
+            b = userDao.modifyUser(connection,userID,userName,gender,birthday,phone,address,userRole);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return b;
+
+    }
+
 
     @Test
     public void test() {
         UserServiceImpl userService = new UserServiceImpl();
+        boolean b = false;
         try {
-            boolean r  = userService.delUser(24);
-            System.out.println(r);
+            b  = userService.modifyUser(17,"郭靖",1,"1987-12-04","124","东湖",3);
         } catch (Exception e) {
             e.printStackTrace();
         }

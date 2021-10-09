@@ -255,5 +255,78 @@ public class UserDaoImpl implements UserDao{
         return ifDelete;
     }
 
+    public User viewUser(Connection connection, int userId) throws SQLException {
+        System.out.println("-------------------------------");
+        User viewUser = new User();
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        if (connection != null) {
+            String sql = "select u.*,r.roleName as userRoleName from smbms_user u,smbms_role r where u.userRole = r.id and u.id = ?";
+            List<Object> list = new ArrayList<Object>();//存放参数
+            list.add(userId);
+            Object[] params = list.toArray();
+            System.out.println(sql.toString());
+            try {
+                rs = BaseDao.execute(connection,pstm, rs ,sql.toString(),params);
+                System.out.println(rs);
+                if (rs.next()) {
+                    viewUser.setId(rs.getInt("id"));
+                    viewUser.setUserCode(rs.getString("userCode"));
+                    viewUser.setUserName(rs.getString("userName"));
+                    viewUser.setAddress(rs.getString("address"));
+                    viewUser.setGender(rs.getInt("gender"));
+                    viewUser.setBirthday(rs.getDate("birthday"));
+                    viewUser.setPhone(rs.getString("phone"));
+                    viewUser.setUserRole(rs.getInt("userRole"));
+                    viewUser.setUserRoleName(rs.getString("userRoleName"));
+                    viewUser.setAge(viewUser.getAge());
+                    System.out.println("查询到用户"+userId);
+                }else{
+                    System.out.println("没有查询到该用户");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                BaseDao.closeResource(null,pstm,null);
+            }
+        }
+        return viewUser;
+    }
+
+    public boolean modifyUser(Connection connection, int userID, String userName,int gender ,String birthday, String phone, String address,int userRole) throws SQLException {
+        System.out.println("-------------------------------");
+        User viewUser = new User();
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        int result = 0;
+        boolean ifModified = false;
+        if (connection != null) {
+            String sql = "update smbms_user set userName = ?, gender = ?,birthday = ?,phone = ?,address = ?,userRole=? where id = ?;";
+            List<Object> list = new ArrayList<Object>();//存放参数
+            list.add(userName);
+            list.add(gender);
+            list.add(birthday);
+            list.add(phone);
+            list.add(address);
+            list.add(userRole);
+            list.add(userID);
+            Object[] params = list.toArray();
+            try {
+                result = BaseDao.execute(connection,pstm,sql.toString(),params);
+                if (result > 0) {
+                    System.out.println("修改用户" + userID + "成功");
+                    ifModified = true;
+                } else {
+                    System.out.println("修改用户失败");
+                    ifModified = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return ifModified;
+    }
+
 
 }

@@ -41,10 +41,18 @@ public class UserServlet extends HttpServlet {
             this.addUser(req, resp);
         } else if(method.equals("ucexist") && method != null){
             this.UserCodeExist(req, resp);
-        } else if (method.equals("deluser")) {
+        } else if (method.equals("deluser") && method != null) {
             this.delUser(req, resp);
+        } else if (method.equals("view") && method != null){
+            this.viewUser(req, resp);
+        } else if (method.equals("modify") && method != null) {
+            this.modifyUser(req, resp);
+        } else if (method.equals("modifyexe") && method != null) {
+            this.modifyUserSubmit(req, resp);
         }
     }
+
+
 
 
     @Override
@@ -294,4 +302,70 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+    //查询用户
+    private void viewUser(HttpServletRequest req, HttpServletResponse resp) {
+        Object o = req.getSession().getAttribute(Constants.USER_SESSION);
+        if (o != null) {
+            int userID = Integer.parseInt(req.getParameter("uid"));
+            UserServiceImpl userService = new UserServiceImpl();
+            User u = userService.viewUser(userID);
+            try {
+                req.setAttribute("user",u);
+                req.getRequestDispatcher("userview.jsp").forward(req, resp);
+            } catch (ServletException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    //修改用户
+    private void modifyUser(HttpServletRequest req, HttpServletResponse resp){
+        Object o = req.getSession().getAttribute(Constants.USER_SESSION);
+        int userID = Integer.parseInt(req.getParameter("uid"));
+        UserServiceImpl userService = new UserServiceImpl();
+        RoleServiceImpl roleService = new RoleServiceImpl();
+        List<Role> roleList = roleService.getRoleList();
+        User u = userService.viewUser(userID);
+        try {
+            req.setAttribute("user",u);
+            req.setAttribute("roleList",roleList);
+            req.getRequestDispatcher("usermodify.jsp").forward(req, resp);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //提交修改用户信息
+    private void modifyUserSubmit(HttpServletRequest req, HttpServletResponse resp) {
+        Object o = req.getSession().getAttribute(Constants.USER_SESSION);
+        if (o != null) {
+            int userID = Integer.parseInt(req.getParameter("uid"));
+            String userName = req.getParameter("userName");
+            int gender = Integer.parseInt(req.getParameter("gender"));
+            String birthday = req.getParameter("birthday");
+            String phone = req.getParameter("phone");
+            String address = req.getParameter("address");
+            int roleID = Integer.parseInt(req.getParameter("userRole"));
+            System.out.println(userID);
+            System.out.println(userName);
+            System.out.println(gender);
+            System.out.println(birthday);
+            System.out.println(phone);
+            System.out.println(address);
+            System.out.println(roleID);
+            UserServiceImpl userService = new UserServiceImpl();
+
+            userService.modifyUser(userID,userName,gender,birthday,phone,address,roleID);
+            try {
+                resp.sendRedirect("user.do?method=query");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
 }

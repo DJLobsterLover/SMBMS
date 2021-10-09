@@ -21,5 +21,10 @@ public interface UserDao {
     public boolean addUser(Connection connection, String userCode, String userName, String userPassword, int gender, String birthday,String phone, String address, int userRole) throws SQLException;
     //删除用户信息
     public boolean delUser(Connection connection, int userId)throws SQLException;
+    //查看用户信息
+    public User viewUser(Connection connection, int userId) throws SQLException;
+    //修改用户信息
+    public boolean modifyUser(Connection connection, int userID, String userName,int gender ,String birthday, String phone, String address,int userRole) throws SQLException;
+
 
 }
